@@ -22,6 +22,7 @@ interface ResearchResult {
 export default function Home() {
   const [query, setQuery] = useState("");
   const [url, setUrl] = useState("");
+  const [mode, setMode] = useState<"auto" | "web3" | "router" | "demo">("auto");
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<ResearchResult | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -36,7 +37,7 @@ export default function Home() {
       const response = await fetch("/api/research", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query, url: url || undefined }),
+        body: JSON.stringify({ query, url: url || undefined, mode }),
       });
 
       if (!response.ok) {
@@ -118,6 +119,24 @@ export default function Home() {
               onChange={(e) => setUrl(e.target.value)}
               className="bg-background/50 border-border/50 focus:border-primary"
             />
+
+            {/* Mode Selector */}
+            <div className="flex items-center gap-4">
+              <label className="text-sm font-medium text-muted-foreground">
+                Inference Mode:
+              </label>
+              <select
+                value={mode}
+                onChange={(e) => setMode(e.target.value as "auto" | "web3" | "router" | "demo")}
+                className="bg-background/50 border border-border/50 rounded-md px-3 py-2 text-sm focus:border-primary outline-none"
+              >
+                <option value="auto">🔄 Auto (Best Available)</option>
+                <option value="router">🌐 Router API</option>
+                <option value="web3">⛓️ Web3 SDK (Direct Contract)</option>
+                <option value="demo">🎮 Demo Mode</option>
+              </select>
+            </div>
+
             <Button
               onClick={handleResearch}
               disabled={isLoading || !query.trim()}
